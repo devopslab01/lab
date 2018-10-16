@@ -13,5 +13,5 @@ wget https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix
 dpkg -i zabbix-release_3.4-1+bionic_all.deb
 apt update
 
-apt install zabbix-server-psql
-apt install zabbix-frontend-php
+apt install -y zabbix-server-psql
+apt install -y zabbix-frontend-php
