@@ -7,4 +7,4 @@ git clone https://github.com/devopslab01/lab
 
 # Configurations
 
-Zabbix server (3.4) with Postgres backend       - to do
+Zabbix server (3.4) with Postgres backend       - https://github.com/devopslab01/lab/blob/master/install_zabbix-server-34-psql.sh
