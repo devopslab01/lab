@@ -1,7 +1,7 @@
 # Get scripts
 
 ````
-cd /root/
+sudo su - root
 git clone https://github.com/devopslab01/lab
 ````
 
