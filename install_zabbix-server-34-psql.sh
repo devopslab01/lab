@@ -13,5 +13,13 @@ wget https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix
 dpkg -i zabbix-release_3.4-1+bionic_all.deb
 apt update
 
-apt install -y zabbix-server-psql
+apt install -y zabbix-server-pgsql
 apt install -y zabbix-frontend-php
+apt install -y postgresql postgresql-contrib
+
+sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
+CREATE USER zabbix;
+ALTER USER zabbix WITH PASSWORD 'zabbixdbpass';
+CREATE DATABASE zabbix OWNER zabbix;
+GRANT ALL PRIVILEGES ON DATABASE zabbix TO zabbix;
+EOF
