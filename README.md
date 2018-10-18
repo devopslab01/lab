@@ -39,9 +39,7 @@ Services:
 # Bastion
 
 ````
-sudo su - root
-git clone https://github.com/devopslab01/lab
-git clone git@github.com:username/repo.git
+git clone git@github.com:devopslab01/lab.git
 
 git add -A; git commit -m "fix"; git push
 ````
