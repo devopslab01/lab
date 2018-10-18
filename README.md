@@ -36,15 +36,16 @@ Services:
   <...>
 ````
 
-# Get scripts
+# Bastion
 
 ````
 sudo su - root
 git clone https://github.com/devopslab01/lab
+git clone git@github.com:username/repo.git
 
 git add -A; git commit -m "fix"; git push
 ````
 
 # Configurations
 
-Zabbix server (3.4) with Postgres backend       - https://github.com/devopslab01/lab/blob/master/install_zabbix-server-34-psql.sh
+Zabbix server (3.4) with Postgres backend       - install_zabbix-server-34-psql.sh
