@@ -2,7 +2,9 @@
 
 ````
 bastion    - manager
-
+host-*     - hypervisors
+serv-*     - virtual machines, home of some common services
+node-*     - virtual machines, test rabbits
 ````
 
 ````
