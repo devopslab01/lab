@@ -20,6 +20,7 @@ apt install -y zabbix-server-pgsql
 apt install -y zabbix-frontend-php
 apt install -y postgresql postgresql-contrib
 apt install -y zabbix-agent
+apt install -y php-pgsql
 
 sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
 DROP DATABASE IF EXISTS zabbix;
@@ -52,8 +53,12 @@ echo "DBUser=zabbix" >> /etc/zabbix/zabbix_server.conf
 sed -i -e "/php_value date.timezone/s/.*/        php_value date.timezone Europe\/Vilnius/" /etc/apache2/conf-enabled/zabbix.conf
 
 systemctl restart apache2
-systemctl --no-pager status apache
+systemctl --no-pager status apache2
 systemctl restart zabbix-server
 systemctl --no-pager status zabbix-server
 systemctl restart postgresql
 systemctl --no-pager status postgresql
+
+echo
+echo "Zabbix web logns: Admin/zabbix"
+echo
