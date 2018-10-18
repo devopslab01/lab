@@ -48,4 +48,6 @@ git add -A; git commit -m "fix"; git push
 
 # Configurations
 
+````
 Zabbix server (3.4) with Postgres backend       - install_zabbix-server-34-psql.sh
+````
