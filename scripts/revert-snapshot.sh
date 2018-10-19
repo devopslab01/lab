@@ -20,12 +20,16 @@ for GUEST in $KVM_GUESTS; do
   echo "Reverting snapshot on host $GUEST ..."
 
   SNAP=`sudo virsh snapshot-list $GUEST |tail -n2 |head -n1 |awk '{print $1}'`
-  echo "Snapshot: $SNAP"
-  sudo virsh snapshot-revert $GUEST $SNAP
-  echo "Start "
-  sudo virsh start $GUEST
+  if [ -n "$SNAP" ]; then
+    echo "Snapshot: $SNAP"
+    sudo virsh snapshot-revert $GUEST $SNAP
+    echo "Start $GUEST ..."
+    sudo virsh start $GUEST
 
-  echo "Snapshot reverted."
+    echo "Snapshot reverted."
+  else
+    echo "ERROR: Guest $GUEST not found!"
+  fi
 done
 
 echo "Done."
