@@ -3,12 +3,17 @@
 if [ -z "$1" ]
   then
     echo "No runner supplied"
+    echo "USAGE: $0 <action> <target>"
+    echo
+    cat lab.conf
     exit 1
 fi
 
 if [ -z "$2" ]
   then
     echo "No target supplied"
+    echo
+    cat lab.conf
     exit 1
 fi
 

@@ -39,7 +39,7 @@ EOF
 
 sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
 CREATE USER zabbix;
-ALTER USER zabbix WITH PASSWORD 'zabbbixpassdb';
+ALTER USER zabbix WITH PASSWORD 'zabbixdbpass';
 CREATE DATABASE zabbix OWNER zabbix;
 GRANT ALL PRIVILEGES ON DATABASE zabbix TO zabbix;
 EOF
