@@ -4,9 +4,13 @@ echo
 echo "--- Install Zabbix Server 3.4 with Local Postgres DB ---"
 echo
 echo "ENV: Ubuntu 18.04 LTS (bionic)"
+echo "PWD: `pwd`"
+echo "USR: `whoami`"
 echo
 
 #--- ENV -------------------------------------------------------------
+
+export DEBIAN_FRONTEND="noninteractive"
 
 DIR="/opt/lab_workdir"
 ZABBIX_URL="https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.4-1+bionic_all.deb"
@@ -14,47 +18,56 @@ ZABBIX_DEB="zabbix-release_3.4-1+bionic_all.deb"
 
 #---------------------------------------------------------------------
 
-HOSTS=`grep "^zabbix_pgsql_local:" lab.conf |awk '{$1=""; print}'`
-SER=`grep "^user:" lab.conf |awk '{print $2}'`
+echo "Configuring `hostname -s` ..."
 
-echo "User:   $USER"
-echo "Hosts: $HOSTS"
-echo
+if [ ! -f "$ZABBIX_DEB" ]; then wget ${ZABBIX_URL}; sudo dpkg -i $ZABBIX_DEB; fi
+apt update
+apt policy zabbix-server-pgsql
 
-CD="cd $DIR"
+systemctl stop zabbix-server
 
-for HOST in $HOSTS; do
-    echo "Configuring $host ..."
 
-    ssh $USER@$HOST -n "sudo mkdir -p $DIR"
-    ssh $USER@$HOST -n "sudo chown $USER:$USER $DIR"
+apt install -y zabbix-server-pgsql
+apt install -y zabbix-frontend-php
+apt install -y postgresql postgresql-contrib
+apt install -y zabbix-agent
+apt install -y php-pgsql
 
-    ssh $USER@$HOST -n "$CD; if [ ! -f "$ZABBIX_DEB" ]; then wget ${ZABBIX_URL}; sudo dpkg -i $ZABBIX_DEB; fi"
-    ssh $USER@$HOST -n "sudo apt-get update"
-    ssh $USER@$HOST -n "sudo apt policy"
-
-    ssh $USER@$HOST -n "sudo systemctl stop zabbix-server"
-
-    ssh $USER@$HOST -n "sudo apt install -y zabbix-server-pgsql"
-    ssh $USER@$HOST -n "sudo apt install -y zabbix-frontend-php"
-    ssh $USER@$HOST -n "sudo apt install -y postgresql postgresql-contrib"
-    ssh $USER@$HOST -n "sudo apt install -y zabbix-agent"
-    ssh $USER@$HOST -n "sudo apt install -y php-pgsql"
-
-    ssh $USER@$HOST -n "sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
+sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
 DROP DATABASE IF EXISTS zabbix;
-EOF"
+EOF
 
-    ssh $USER@$HOST -n "sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
+sudo -i PWD=/var/lib/postgresql/ -u postgres psql << EOF
 CREATE USER zabbix;
 ALTER USER zabbix WITH PASSWORD 'zabbbixpassdb';
 CREATE DATABASE zabbix OWNER zabbix;
 GRANT ALL PRIVILEGES ON DATABASE zabbix TO zabbix;
-EOF"
+EOF
 
-    ssh $USER@$HOST -n "zcat /usr/share/doc/zabbix-server-pgsql/create.sql.gz | sudo -u zabbix psql zabbix"
+zcat /usr/share/doc/zabbix-server-pgsql/create.sql.gz | sudo -u zabbix psql zabbix
 
-done
+sed -i -e "/DBHost=/s/.*//" /etc/zabbix/zabbix_server.conf
+sed -i -e "/DBPassword=/s/.*//" /etc/zabbix/zabbix_server.conf
+sed -i -e "/DBName=/s/.*//" /etc/zabbix/zabbix_server.conf
+sed -i -e "/DBUser=/s/.*//" /etc/zabbix/zabbix_server.conf
+sed -i -e 's/#.*$//' -e '/^$/d' /etc/zabbix/zabbix_server.conf
+
+echo "DBHost=" >> /etc/zabbix/zabbix_server.conf
+echo "DBPassword=zabbixdbpass" >> /etc/zabbix/zabbix_server.conf
+echo "DBName=zabbix" >> /etc/zabbix/zabbix_server.conf
+echo "DBUser=zabbix" >> /etc/zabbix/zabbix_server.conf
+
+sed -i -e "/php_value date.timezone/s/.*/        php_value date.timezone Europe\/Vilnius/" /etc/apache2/conf-enabled/zabbix.conf
+
+systemctl restart apache2
+systemctl --no-pager status apache2
+systemctl restart zabbix-server
+systemctl --no-pager status zabbix-server
+systemctl restart postgresql
+systemctl --no-pager status postgresql
+
+echo
+echo "Zabbix web logns: Admin/zabbix"
 
 echo
 echo "Done."
