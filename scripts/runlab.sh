@@ -1,7 +1,12 @@
 #!/bin/bash
 
+echo
+echo "--- Runlab ---"
+echo
+
 cat lab.conf | grep "runlab:" | while read line; do
   echo $line
+  echo
   ACTION=`echo $line |awk '{print $2}'`
   TARGET=`echo $line |awk '{print $3}'`
   ARGUME=`echo $line |awk '{$1=$2=$3=""; print}'`

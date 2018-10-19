@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-  echo "USAGE: $0 <kvm_host> <kvm_guest> [<kvm_guest>] ..."
+  echo "USAGE: $0 <kvm_guest> [<kvm_guest>] ..."
   exit 1
 fi
 
@@ -9,7 +9,7 @@ echo
 echo "--- Revert Snapshot in KVM ---"
 echo
 
-KVM_HOST=`uname -s`
+KVM_HOST=`hostname -s`
 KVM_GUESTS=`echo $* |tr -s ' '`
 
 echo "KVM HOST:   $KVM_HOST"
