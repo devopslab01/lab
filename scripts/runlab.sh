@@ -4,7 +4,7 @@ echo
 echo "--- Runlab ---"
 echo
 
-cat lab.conf | grep "runlab:" | while read line; do
+cat lab.conf | grep -v "#" | grep "runlab:" | while read line; do
   echo $line
   echo
   ACTION=`echo $line |awk '{print $2}'`

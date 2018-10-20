@@ -31,5 +31,9 @@ sed -i -e "/external_url/s/^external_url.*/external_url 'http:\/\/gitlab.lab.loc
 
 gitlab-ctl reconfigure
 
+echo
+echo "Got to http://gitlab.lab.local"
+
+echo
 echo "Done."
 echo
