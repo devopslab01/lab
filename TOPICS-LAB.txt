@@ -1,0 +1,141 @@
+================================================================================
+    DOCKER
+================================================================================
+
+docker --version
+docker version
+docker info
+
+docker run hello-world
+
+docker image ls
+docker container ls
+docker container ls --all
+docker container ls -aq
+
+docker container kill <hash>         # Force shutdown of the specified container
+docker container rm <hash>        # Remove specified container from this machine
+docker container rm $(docker container ls -a -q)         # Remove all containers
+
+
+--- DOCKERFILE -----------------------------------------------------------------
+
+mkdir myproj
+cd myproj
+
+--------------------------------------------------------------------------------
+cat << EOF > Dockerfile
+# Use an official Python runtime as a parent image
+FROM python:2.7-slim
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+EOF
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+cat << EOF > requirements.txt
+Flask
+Redis
+EOF
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+cat << EOF > app.py
+from flask import Flask
+from redis import Redis, RedisError
+import os
+import socket
+
+# Connect to Redis
+redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    try:
+        visits = redis.incr("counter")
+    except RedisError:
+        visits = "<i>cannot connect to Redis, counter disabled</i>"
+
+    html = "<h3>Hello {name}!</h3>" \
+           "<b>Hostname:</b> {hostname}<br/>" \
+           "<b>Visits:</b> {visits}"
+    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80)
+EOF
+--------------------------------------------------------------------------------
+
+docker build -t friendlyhello .
+docker image ls
+
+docker run -p 4000:80 friendlyhello
+docker run -d -p 4000:80 friendlyhello
+
+curl http://localhost:4000
+
+docker container stop 4f2366509714
+
+
+--- DOCKER HUB -----------------------------------------------------------------
+
+docker login
+docker tag friendlyhello devopslab01/get-started:part2
+docker image ls
+docker push devopslab01/get-started:part2
+
+
+--- DOCKER COMPOSE -------------------------------------------------------------
+
+docker-compose --version
+
+--------------------------------------------------------------------------------
+cat << EOF > docker-compose.yml
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: devopslab01/get-started:part2
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "4000:80"
+    networks:
+      - webnet
+networks:
+  webnet:
+EOF
+--------------------------------------------------------------------------------
+
+docker swarm init
+
+docker stack deploy -c docker-compose.yml getstartedlab
+
+docker service ps getstartedlab_web
+
+docker stack rm getstartedlab
+docker swarm leave --force

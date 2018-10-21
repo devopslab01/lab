@@ -1,0 +1,8 @@
+docker
+  dockerfile
+  docker hub
+  docker compose
+  docker machine
+
+python
+  pip
