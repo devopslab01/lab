@@ -31,12 +31,12 @@ bash ./script.deb.sh
 apt update
 apt install gitlab-ce
 
-sed -i -e "/external_url/s/^external_url.*/external_url 'http:\/\/gitlab.lab.local'/" /etc/gitlab/gitlab.rb
+sed -i -e "/external_url/s/^external_url.*/external_url 'https:\/\/gitlab.lab.local'/" /etc/gitlab/gitlab.rb
 
 gitlab-ctl reconfigure
 
 echo
-echo "Got to http://gitlab.lab.local"
+echo "Got to https://gitlab.lab.local"
 
 echo
 echo "Done."
