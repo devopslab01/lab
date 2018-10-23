@@ -24,6 +24,8 @@ cd /opt/runlab/
 curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash
 apt -y install gitlab-runner
 
+echo
+echo "Run: gitlab-runner register"
 
 #--- END -----------------------------------------------------------------------
 echo; echo "Done."; echo
